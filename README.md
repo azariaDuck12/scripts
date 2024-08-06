@@ -1,2 +1,3 @@
-# blender
-Blender scripts
+# Blender
+
+Blender scripts by Azaria Allen
