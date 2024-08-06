@@ -12,7 +12,7 @@ class CreateHairStrandOperator(bpy.types.Operator):
         default=2,
         min=2,
         max=20
-    )
+    ) # type: ignore
     
     extrude: FloatProperty(
         name="Extrude",
@@ -21,7 +21,7 @@ class CreateHairStrandOperator(bpy.types.Operator):
         min=0,
         max=100,
         precision=2
-    )
+    ) # type: ignore
 
     bevel_depth: FloatProperty(
         name="Bevel Depth",
@@ -30,7 +30,7 @@ class CreateHairStrandOperator(bpy.types.Operator):
         min=0.0,
         max=100,
         precision=2
-    )
+    ) # type: ignore
 
     def execute(self, context):
         # Clear existing curve objects
