@@ -1,6 +1,9 @@
 import bpy
 from bpy.props import IntProperty, FloatProperty
 
+# Global variable to hold the instance of the CreateHairStrandOperator
+operator_instance = None
+
 class CreateHairStrandOperator(bpy.types.Operator):
     bl_idname = "object.create_hair_strand"
     bl_label = "Create Hair Strand"
@@ -31,6 +34,13 @@ class CreateHairStrandOperator(bpy.types.Operator):
         max=100,
         precision=2
     ) # type: ignore
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "num_points")
+        layout.prop(self, "extrude")
+        layout.prop(self, "bevel_depth")
+        layout.operator("object.reset_hair_strand_defaults", text="Reset to Defaults")
 
     def execute(self, context):
         # Clear existing curve objects
@@ -74,8 +84,21 @@ class CreateHairStrandOperator(bpy.types.Operator):
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        # Open the operator properties dialog
+        # Open the operator properties dialogue
+        context.window_manager.modal_handler_add(self)
         return context.window_manager.invoke_props_dialog(self)
+
+class ResetHairStrandDefaultsOperator(bpy.types.Operator):
+    bl_idname = "object.reset_hair_strand_defaults"
+    bl_label = "Reset Hair Strand Defaults"
+
+    def execute(self, context):
+        global operator_instance
+        if operator_instance:
+            operator_instance.num_points = 2
+            operator_instance.extrude = 1
+            operator_instance.bevel_depth = 0.5
+        return {'FINISHED'}
 
 # Function to add the operator to the Object menu
 def menu_func(self, context):
@@ -84,10 +107,12 @@ def menu_func(self, context):
 # Register and unregister the operator and menu
 def register():
     bpy.utils.register_class(CreateHairStrandOperator)
+    bpy.utils.register_class(ResetHairStrandDefaultsOperator)
     bpy.types.VIEW3D_MT_mesh_add.append(menu_func)  # Add to the "Add Mesh" menu
 
 def unregister():
     bpy.utils.unregister_class(CreateHairStrandOperator)
+    bpy.utils.unregister_class(ResetHairStrandDefaultsOperator)
     bpy.types.VIEW3D_MT_mesh_add.remove(menu_func)
 
 # Ensure proper registration and unregistration
